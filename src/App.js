@@ -3,9 +3,9 @@ import React, { useState,useEffect } from 'react';
 import {db, auth} from './Firebase';
 import './App.css';
 import Post from './Post';
-import Header from './Header';
+import ImageUpload from './ImageUpload';
 import Modal from '@material-ui/core/Modal';
-import { functions } from 'firebase';
+import InstagramEmbed from 'react-instagram-embed';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Input } from '@material-ui/core';
 
@@ -32,14 +32,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 function App() {
   const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
 
   const [posts,setPosts] = useState([]);
   const [open,setOpen] = useState(false);
-
+  
+  const [openlogIn,setopenlogIn] = useState('');
   const [username,setUsername] = useState('');
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
@@ -51,12 +51,11 @@ function App() {
       if(authUser){ 
         //user has logged in...
         console.log(authUser);
-        setUser(authUser);
-       
+        setUser(authUser);  //after refrese you still login
+
       } else {
         //user has loggged out..
-        setUser(null);
-       
+        setUser(null);       
       }
     })
     return () => {
@@ -86,14 +85,57 @@ function App() {
     })
     .catch((error) => alert(error.message))
 
+    setOpen(false);    //close the signup pop-up window
   }
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
+  const logIn = (event) => {
+    event.preventDefault();
+
+    auth
+      .signInWithEmailAndPassword(email,password)
+      .catch((error) => alert(error.message))
+
+      setopenlogIn(false);   //close the login pop-up window
+
+  }
 
 
   return (
     <div className="App">
+    
+    {/* Caption Input */}
+    {/* file picker */}
+    {/* Post or submit button */}
+
+      <Modal
+        open={openlogIn}
+        onClose={() => setopenlogIn(false)}
+      >
+      <div style={modalStyle} className={classes.paper}>
+        <form className="app__signup">
+          <center>
+            <img
+              className="app__headerImage"
+              src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+              alt="insta logo"
+            />
+          </center>
+          <Input
+              placeholder='email'
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+              placeholder='password'
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit" onClick={logIn}>Sign Up</Button>
+        </form>
+
+    </div>
+      </Modal>     
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -130,30 +172,64 @@ function App() {
 
     </div>
       </Modal>
-      <Header/>
-      {
-        user ? (
-          <Button onClick={ () => auth.signOut()}>Log Out</Button>
-        ) : (
-          <Button onClick={ () => setOpen(true)}>Sign Up</Button>
-        )
-      }
+      
+      <div className="app__header">
+        <img className="hedaer__logo" src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"/>
+        <div className="login__bar">
+          {
+            user ? (
+              <Button onClick={ () => auth.signOut()}>Log Out</Button>
+            ) : (
+              <div className="app__loginContainer">
+                <Button onClick={ () => setopenlogIn(true)}>Log In</Button>
+                <Button onClick={ () => setOpen(true)}>Sign Up</Button>
+              </div>
+              )
+          }
+        </div>
+      </div>
+      <div className="app__posts">
+        <div className="app__postsLeft">
+        {
+          posts.map( ({id, post}) => (
+            <Post 
+              key={id}
+              postId={id}
+              user={user}
+              username={post.username} 
+              caption={post.caption} 
+              imageUrl={post.imageUrl}
+            />
+          ))
+        }     
+      </div>
+      <div className="app__postsRight">
+        {/* <InstagramEmbed
+            url='https://www.instagram.com/p/CEB8527DKVa/?igshid=95ztm0cd9yrx'
+            maxWidth={50}
+            hideCaption={false}
+            containerTagName='div'
+            protocol=''
+            injectScript
+            onLoading={() => {}}
+            onSuccess={() => {}}
+            onAfterRender={() => {}}
+            onFailure={() => {}}
+          /> */}
+       </div>
+      </div>
+      <div className="app__uploadBar">
+        {
+          user ? (
+            <ImageUpload username={username} />
 
-      {
-        posts.map( ({id, post}) => (
-          <Post 
-            username={post.username} 
-            caption={post.caption} 
-            imageUrl={post.imageUrl}
-          />
-        ))
-      }
-      {/*       
-      <Post 
-        username="1711shashank" 
-        caption="wowo" 
-        imageUrl="https://www.incimages.com/uploaded_files/image/1920x1080/getty_1183851343_200011772000928019_408169.jpg"/>
-       */}
+          ) : (
+            <p> Please Log in to Uplode</p>
+
+          )
+        }
+      </div>
+       
     </div>
   );
 }

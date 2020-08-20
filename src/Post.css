@@ -1,5 +1,5 @@
 .post{
-    background-color: #FAFAFA;
+    background-color: white;
     border: 1px solid lightgray;
     margin-bottom: 15px;
     max-width: 500px;
@@ -28,4 +28,32 @@
 }
 .post__text > span{
     font-weight: 500;
+}
+
+.post__commentBox{
+    display: flex;
+    margin-top: 10px;
+
+}
+.post__comments{
+    font-weight: normal;
+    margin-left: 15px ;
+    text-size-adjust: 10px;
+}
+.post__comments > p > span{
+    font-weight: 500;
+}
+.post__input{
+    flex: 1;
+    border: none;
+    padding: 8px;
+    border-top: 1px solid lightgray;
+}
+.post__button{
+    flex: 0;
+    border: none;
+    padding: 10px;
+    color: #6b96c2;
+    border-top: 1px solid lightgray;
+
 }
