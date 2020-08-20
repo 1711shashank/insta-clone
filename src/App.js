@@ -188,6 +188,18 @@ function App() {
           }
         </div>
       </div>
+      <div className="app__uploadBar">
+        {
+          user ? (
+            <ImageUpload username={username} />
+
+          ) : (
+            <p> Please Log in to Uplode</p>
+
+          )
+        }
+      </div>
+       
       <div className="app__posts">
         <div className="app__postsLeft">
         {
@@ -218,18 +230,7 @@ function App() {
           /> */}
        </div>
       </div>
-      <div className="app__uploadBar">
-        {
-          user ? (
-            <ImageUpload username={username} />
-
-          ) : (
-            <p> Please Log in to Uplode</p>
-
-          )
-        }
-      </div>
-       
+      
     </div>
   );
 }
